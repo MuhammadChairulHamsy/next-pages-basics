@@ -1,12 +1,11 @@
-import Link from "next/link"
+import LoginViews from "@/views/Auth/Login";
 
 const LoginPage = () => {
   return (
-    <div>
-       <h1>Login Page</h1>
-        <p>Belum punya akun ? registrasi <Link href="/auth/register">disini</Link></p>
-    </div>
-  )
-}
+    <>
+      <LoginViews />
+    </>
+  );
+};
 
-export default LoginPage
+export default LoginPage;
