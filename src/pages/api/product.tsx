@@ -11,7 +11,11 @@ const getProducts = async (
   res: NextApiResponse<DataProductProps>,
 ) => {
   const data = await getDataProducts("products");
-  res.status(200).json({ status: true, statusCode: 200, dataProduct: data });
+  res.status(200).json({
+    status: true,
+    statusCode: 200,
+    dataProduct: data
+  });
 };
 
 export default getProducts;
