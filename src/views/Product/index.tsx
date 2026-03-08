@@ -1,20 +1,23 @@
 import SkeletonCard from "@/components/fragments/SkeletonCard";
-import type { ProductTypeProps } from "@/pages/product";
+import type { ProductTypeProps } from "@/types/product.type";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface ProductViewProps {
   products: ProductTypeProps[];
   error: string | null;
-//   isLoading: boolean;
+  //   isLoading: boolean;
 }
 
 const ProductView = ({ products, error }: ProductViewProps) => {
-//   {
-//     isLoading && (
-//       <div className="flex min-h-screen items-center justify-center">
-//         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
-//       </div>
-//     );
-//   }
+
+  //   {
+  //     isLoading && (
+  //       <div className="flex min-h-screen items-center justify-center">
+  //         <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+  //       </div>
+  //     );
+  //   }
   return (
     <div className="container min-h-screen">
       <div className="my-5">
@@ -38,10 +41,10 @@ const ProductView = ({ products, error }: ProductViewProps) => {
                 <SkeletonCard key={index} />
               ))
             : products.map((item: ProductTypeProps) => (
-                <div
+                <Link href={`/product/${item.id}`}
                   key={item.id}
                   className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
-                >
+                  >
                   {/* Bagian Gambar */}
                   <div className="w-full aspect-square bg-slate-100">
                     <img
@@ -62,11 +65,11 @@ const ProductView = ({ products, error }: ProductViewProps) => {
 
                     <div className="mt-auto flex justify-between items-center">
                       <span className="text-xl font-bold text-slate-900">
-                        ${item.price.toLocaleString()}
+                        ${item.price.toLocaleString('en-US')}
                       </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
         </div>
       </div>

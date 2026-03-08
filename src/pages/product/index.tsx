@@ -4,20 +4,12 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
-export type ProductTypeProps = {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  image: string;
-};
-
 const ProductPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const { push } = useRouter();
 
   const { data, error, isLoading } = useSWR("/api/product", fetcher);
- 
+
   useEffect(() => {
     if (!isLogin) {
       push("/auth/login");
