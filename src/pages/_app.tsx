@@ -1,13 +1,14 @@
+import type { AppProps } from "next/app";
+import "@/styles/globals.css";
+import AppShell from "@/components/layouts/AppShell";
+import { SessionProvider } from "next-auth/react";
 
-import type { AppProps } from 'next/app'
-import  "@/styles/globals.css";
-import AppShell from '@/components/layouts/AppShell';
-
- 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps: {session, ...pageProps} }: AppProps) {
   return (
-    <AppShell>
-      <Component {...pageProps} /> 
-    </AppShell>
-  )
+    <SessionProvider session={session}>
+      <AppShell>
+        <Component {...pageProps} />
+      </AppShell>
+    </SessionProvider>
+  );
 }

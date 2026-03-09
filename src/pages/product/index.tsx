@@ -5,16 +5,8 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 const ProductPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const { push } = useRouter();
-
   const { data, error, isLoading } = useSWR("/api/product", fetcher);
-
-  useEffect(() => {
-    if (!isLogin) {
-      push("/auth/login");
-    }
-  }, [isLogin, push]);
 
   return (
     <div>
