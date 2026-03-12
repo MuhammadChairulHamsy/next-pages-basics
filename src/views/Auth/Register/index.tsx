@@ -1,35 +1,39 @@
-import FormLogin from "@/components/fragments/FormLogin";
-import { signIn } from "next-auth/react";
+import FormRegister from "@/components/fragments/FormRegister";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-const LoginViews = () => {
+const RegisterView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { push, query } = useRouter();
-
-  const callbackUrl: any = query.callbackUrl || "/";
+  const { push } = useRouter();
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     setIsLoading(true);
     setError("");
 
-    try {
-      const res = await signIn("credentials", {
-        redirect: false,
-        email: event.target.email.value,
-        password: event.target.password.value,
-        callbackUrl
-      })
+    const data = {
+      email: event.target.email.value,
+      fullname: event.target.fullname.value,
+      password: event.target.password.value,
+    };
 
-      if(!res?.error) {
+    try {
+      const result = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const responseData = await result.json();
+      if (result.status === 200) {
+        event.target.reset();
         setIsLoading(false);
-        push(callbackUrl)
+        push("/auth/login");
       } else {
-        setIsLoading(false);
-        setError("Email atau kata sandi salah.");
+        setError(responseData.message || "Registrasi gagal ");
       }
     } catch (error) {
       setError("Terjadi kesalahan jaringan");
@@ -45,12 +49,12 @@ const LoginViews = () => {
         <div className="mb-10">
           <div className="w-8 h-8 bg-slate-900 rounded-sm mb-6" />
           <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">
-            Selamat datang
+            Buat akun baru
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            Belum membuat akun?{" "}
+            Sudah punya akun?{" "}
             <Link
-              href="/auth/register"
+              href="/auth/login"
               className="text-slate-900 font-medium underline underline-offset-2 hover:opacity-70 transition-opacity"
             >
               Masuk disini
@@ -64,7 +68,7 @@ const LoginViews = () => {
         </div>
 
         {/* Form */}
-        <FormLogin handleSubmit={handleSubmit} isLoading={isLoading} />
+        <FormRegister handleSubmit={handleSubmit} isLoading={isLoading} />
 
         {/* Footer note */}
         <p className="text-center text-xs text-slate-400 mt-8 leading-relaxed">
@@ -79,4 +83,4 @@ const LoginViews = () => {
   );
 };
 
-export default LoginViews;
+export default RegisterView;

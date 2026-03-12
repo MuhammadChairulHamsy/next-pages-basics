@@ -1,14 +1,16 @@
+// src/proxy.ts
 import { NextRequest, NextResponse } from "next/server";
+import { withAuth } from "./middlewares/withAuth";
 
-export const proxy = (req: NextRequest) => {
-  const isLogin = false;
-  if (isLogin) {
-    return NextResponse.next();
-  } else {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
-  }
+const proxyHandler = (req: NextRequest) => {
+  return NextResponse.next();
 };
 
+export const proxy = withAuth(proxyHandler);
+
 export const config = {
-  matcher: ["/product", "/about"],
+  matcher: [
+    "/profile/:path*",
+    "/admin/:path*",
+  ],
 };

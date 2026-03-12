@@ -1,18 +1,41 @@
+import { signIn } from "@/lib/service";
+import { compare } from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { DefaultSession } from "next-auth";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      fullname?: string;
+      role?: string;
+    } & DefaultSession["user"];
+  }
+
+  interface User {
+    fullname?: string;
+    role?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    fullname?: string;
+    role?: string;
+  }
+}
 
 const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECTET,
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       type: "credentials",
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "john doen" },
         email: {
           label: "Email",
           type: "email",
@@ -21,19 +44,18 @@ const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const { email, password, username } = credentials as {
-          username: string;
+        const { email, password } = credentials as {
           email: string;
           password: string;
         };
-        const user: any = {
-          id: 1,
-          username: username,
-          email: email,
-          password: password,
-        };
+        const user: any = await signIn({ email });
         if (user) {
-          return user;
+          const passwordConfirm = await compare(password, user.password);
+          if (passwordConfirm) {
+            const {passwordConfirm, ...userWithoutPassword} = user;
+            return userWithoutPassword;
+          }
+          return null;
         } else {
           return null;
         }
@@ -41,9 +63,11 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt({ token, account, profile, user }) {
+    jwt({ token, account, profile, user }: any) {
       if (account?.provider === "credentials") {
         token.email = user.email;
+        token.fullname = user.fullname;
+        token.role = user.role;
       }
       return token;
     },
@@ -51,8 +75,17 @@ const authOptions: NextAuthOptions = {
       if ("email" in token) {
         session.user.email = token.email;
       }
+      if ("fullname" in token) {
+        session.user.fullname = token.fullname;
+      }
+      if ("role" in token) {
+        session.user.role = token.role;
+      }
       return session;
     },
+  },
+  pages: {
+    signIn: "/auth/login",
   },
 };
 

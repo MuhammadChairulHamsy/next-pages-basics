@@ -1,6 +1,6 @@
 const SkeletonCard = () => {
   return (
-    <div className="w-full max-w-[350px] bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+    <div className="w-full max-w-80 bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
       {/* Skeleton Gambar */}
       <div className="w-full aspect-square bg-slate-200 animate-pulse" />
 
