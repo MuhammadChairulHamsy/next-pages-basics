@@ -10,9 +10,16 @@ const Navbar = () => {
 
         {session ? (
           <div className="flex items-center gap-3">
+            {session.user.image && (
+              <img
+                src={session.user.image}
+                alt={session.user.fullname}
+                className="w-8 h-8 rounded-full"
+              />
+            )}
             <p className="text-slate-900">Hello, {session.user?.fullname}</p>
             <button
-              onClick={() => signOut({callbackUrl: "/auth/login"})}
+              onClick={() => signOut({ callbackUrl: "/auth/login" })}
               className="text-red-600 font-bold hover:underline"
             >
               Sign out

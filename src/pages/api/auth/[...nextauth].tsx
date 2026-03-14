@@ -1,15 +1,17 @@
-import { signIn } from "@/lib/service";
+import { getUserByEmail, signIn, signInWithGoogle } from "@/lib/service";
 import { compare } from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { DefaultSession } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 
 declare module "next-auth" {
   interface Session {
     user: {
       fullname?: string;
       role?: string;
+      image?: string;
     } & DefaultSession["user"];
   }
 
@@ -23,6 +25,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     fullname?: string;
     role?: string;
+    picture?: string;
   }
 }
 
@@ -52,7 +55,7 @@ const authOptions: NextAuthOptions = {
         if (user) {
           const passwordConfirm = await compare(password, user.password);
           if (passwordConfirm) {
-            const {passwordConfirm, ...userWithoutPassword} = user;
+            const { passwordConfirm, ...userWithoutPassword } = user;
             return userWithoutPassword;
           }
           return null;
@@ -61,22 +64,52 @@ const authOptions: NextAuthOptions = {
         }
       },
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
   ],
   callbacks: {
-    jwt({ token, account, profile, user }: any) {
+    async jwt({ token, account, user }: any) {
       if (account?.provider === "credentials") {
         token.email = user.email;
         token.fullname = user.fullname;
         token.role = user.role;
       }
+
+      if (account?.provider === "google") {
+        await signInWithGoogle(
+          { name: user.name, email: user.email, image: user.image },
+          (result: any) => {
+            if (result.status === true) {
+              token.fullname = user.name;
+              token.email = user.email;
+              token.picture = user.image;
+              token.role = "user";
+            }
+          },
+        );
+      }
+
+      if(token.email) {
+        const freshUser = await getUserByEmail(token.email);
+        if(freshUser) {
+          token.role = freshUser.role;
+        }
+      }
+
       return token;
     },
+
     async session({ session, token }: any) {
       if ("email" in token) {
         session.user.email = token.email;
       }
       if ("fullname" in token) {
         session.user.fullname = token.fullname;
+      }
+      if ("picture" in token) {
+        session.user.image = token.picture;
       }
       if ("role" in token) {
         session.user.role = token.role;

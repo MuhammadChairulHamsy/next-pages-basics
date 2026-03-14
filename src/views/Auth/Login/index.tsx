@@ -10,6 +10,7 @@ const LoginViews = () => {
   const { push, query } = useRouter();
 
   const callbackUrl: any = query.callbackUrl || "/";
+ 
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -64,7 +65,7 @@ const LoginViews = () => {
         </div>
 
         {/* Form */}
-        <FormLogin handleSubmit={handleSubmit} isLoading={isLoading} />
+        <FormLogin handleSubmit={handleSubmit} isLoading={isLoading}  />
 
         {/* Footer note */}
         <p className="text-center text-xs text-slate-400 mt-8 leading-relaxed">

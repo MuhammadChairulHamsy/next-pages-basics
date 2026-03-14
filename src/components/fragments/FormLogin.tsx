@@ -1,3 +1,6 @@
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/router";
+
 const FormLogin = ({
   handleSubmit,
   isLoading,
@@ -5,6 +8,16 @@ const FormLogin = ({
   handleSubmit: (event: any) => void;
   isLoading: boolean;
 }) => {
+  const {push, query } = useRouter();
+
+   const callbackUrl: any = query.callbackUrl || "/";
+
+   const handleGoogleLogin = async () => {
+    const res = await signIn("google", {redirect: false, callbackUrl});
+    if(res?.url) {
+      push(res.url)
+    }
+   }
   return (
     <div>
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -48,6 +61,11 @@ const FormLogin = ({
           {isLoading ? "Daftar sekarang" : "Masuk"}
         </button>
       </form>
+        <button onClick={() => signIn("google", {
+          callbackUrl,
+        })} className="w-full bg-blue-500 text-white text-sm font-medium py-3 rounded-lg hover:bg-blue-900 active:scale-[0.98] transition-all mt-2">
+          Login Google
+        </button>
     </div>
   );
 };

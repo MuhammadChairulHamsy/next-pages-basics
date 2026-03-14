@@ -5,7 +5,7 @@ const ProfilePage = () => {
   return (
     <div>
       <h1 className='text-slate-900'>Profile</h1>
-      <p className="text-slate-900">{session && session.user?.username}</p>
+      <p className="text-slate-900">{session && session.user?.fullname}</p>
     </div>
   )
 }

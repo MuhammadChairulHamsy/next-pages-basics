@@ -6,6 +6,7 @@ import {
   getDocs,
   getFirestore,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import app from "./firebase";
@@ -24,17 +25,19 @@ export const getDataProducts = async (collectionName: string) => {
   return data;
 };
 
-export const getDataProductById = async ( collectionName: string, id: string) => {
-    const response = await getDoc(doc(fireStore, collectionName, id));
-    if(response.exists()) {
-        return {id: response.id, ...response.data()};
-    } 
-    const data= await response.data();
-    return data;
-}
+export const getDataProductById = async (
+  collectionName: string,
+  id: string,
+) => {
+  const response = await getDoc(doc(fireStore, collectionName, id));
+  if (response.exists()) {
+    return { id: response.id, ...response.data() };
+  }
+  const data = await response.data();
+  return data;
+};
 
-
-export async function signIn(userData: {email: string}) {
+export async function signIn(userData: { email: string }) {
   const queryLogin = query(
     collection(fireStore, "users"),
     where("email", "==", userData.email),
@@ -45,7 +48,7 @@ export async function signIn(userData: {email: string}) {
     id: doc.id,
     ...doc.data(),
   }));
-  if(data) {
+  if (data) {
     return data[0];
   } else {
     return null;
@@ -57,7 +60,7 @@ export async function signUp(
     email: string;
     fullname: string;
     password: string;
-    role?: string; 
+    role?: string;
   },
   callback: Function,
 ) {
@@ -68,7 +71,6 @@ export async function signUp(
 
   const snapshot = await getDocs(queryRegister);
 
-
   if (!snapshot.empty) {
     callback({ status: false, message: "Email already exists" });
   } else {
@@ -78,7 +80,7 @@ export async function signUp(
       await addDoc(collection(fireStore, "users"), {
         fullname: userData.fullname,
         email: userData.email,
-        password:hashedPassword, 
+        password: hashedPassword,
         role: "user",
         created_at: new Date(),
       });
@@ -88,4 +90,58 @@ export async function signUp(
       callback({ status: false, message: "Registration failed" });
     }
   }
+}
+
+export async function signInWithGoogle(userData: any, callback: any) {
+  const queryLogin = query(
+    collection(fireStore, "users"),
+    where("email", "==", userData.email),
+  );
+
+  const snapshot = await getDocs(queryLogin);
+  const data: any = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  if (data.length > 0) {
+    try {
+      userData.role = data[0].role
+      await updateDoc(doc(fireStore, "users", data[0].id), {
+        fullname: userData.name,
+        email: userData.email,
+        picture: userData.image,
+        role: userData.role
+      });
+      callback({ status: true, message: "Sign in with google success" });
+    } catch (error) {
+      callback({ status: false, message: "Sign in google failed" });
+    }
+  } else {
+    try {
+       userData.role = "user"
+      await addDoc(collection(fireStore, "users"), {
+        fullname: userData.name,
+        email: userData.email,
+        picture: userData.image,
+        role: userData.role
+      });
+
+      callback({ status: true, message: "Sign in with google success" });
+    } catch (error) {
+      callback({ status: false, message: "Sign in google failed" });
+    }
+  }
+}
+
+export async function getUserByEmail(email: string) {
+  const q = query(
+    collection(fireStore, "users"),
+    where("email", "==", email)
+  );
+  const snapshot = await getDocs(q);
+  if (!snapshot.empty) {
+    return snapshot.docs[0].data();
+  }
+  return null;
 }
