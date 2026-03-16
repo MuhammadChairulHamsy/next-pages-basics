@@ -13,7 +13,7 @@ import type { ProductTypeProps } from "@/types/product.type";
 export default ProductPage;
 
 export const getServerSideProps = async () => {
-  const res = await fetch("http://localhost:3000/api/product");
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_UR}/api/product`);
   const data = await res.json();
   console.log(data);
   

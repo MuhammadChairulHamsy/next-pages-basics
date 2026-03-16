@@ -55,45 +55,45 @@ const DetailProductPage = ({ product }: { product: ProductTypeProps }) => {
 
 export default DetailProductPage;
 
-// export const getServerSideProps = async ({params}: {params: {id: string}}) => {
+export const getServerSideProps = async ({params}: {params: {id: string}}) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_UR}/api/product/${params.id}`);
+  const data = await res.json();
+  console.log(data);
+
+  return {
+    props: {
+      product: data.dataProduct || [],
+    },
+  };
+};
+
+// export const getStaticPaths = async () => {
+//   const response = await fetch("http://localhost:3000/api/product");
+
+//   const data = await response.json();
+
+//   const paths = data.dataProduct.map((product: ProductTypeProps) => ({
+//     params: {
+//       id: product.id,
+//     },
+//   }));
+
+//   console.log(paths);
+//   return { paths, fallback: false };
+// };
+
+// export const getStaticProps = async ({
+//   params,
+// }: {
+//   params: { id: string };
+// }) => {
 //   const res = await fetch(`http://localhost:3000/api/product/${params.id}`);
 //   const data = await res.json();
 //   console.log(data);
 
 //   return {
 //     props: {
-//       product: data.dataProduct || [],
+//       product: data.dataProduct || null,
 //     },
 //   };
 // };
-
-export const getStaticPaths = async () => {
-  const response = await fetch("http://localhost:3000/api/product");
-
-  const data = await response.json();
-
-  const paths = data.dataProduct.map((product: ProductTypeProps) => ({
-    params: {
-      id: product.id,
-    },
-  }));
-
-  console.log(paths);
-  return { paths, fallback: false };
-};
-
-export const getStaticProps = async ({
-  params,
-}: {
-  params: { id: string };
-}) => {
-  const res = await fetch(`http://localhost:3000/api/product/${params.id}`);
-  const data = await res.json();
-  console.log(data);
-
-  return {
-    props: {
-      product: data.dataProduct || null,
-    },
-  };
-};
