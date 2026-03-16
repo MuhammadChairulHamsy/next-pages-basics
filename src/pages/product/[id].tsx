@@ -56,7 +56,7 @@ const DetailProductPage = ({ product }: { product: ProductTypeProps }) => {
 export default DetailProductPage;
 
 export const getServerSideProps = async ({params}: {params: {id: string}}) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_UR}/api/product/${params.id}`);
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${params.id}`);
   const data = await res.json();
   console.log(data);
 
