@@ -1,7 +1,7 @@
 import SkeletonCard from "@/components/fragments/SkeletonCard";
 import type { ProductTypeProps } from "@/types/product.type";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 interface ProductViewProps {
   products: ProductTypeProps[];
@@ -39,9 +39,11 @@ const ProductView = ({ products, error }: ProductViewProps) => {
                   >
                   {/* Bagian Gambar */}
                   <div className="w-full aspect-square bg-slate-100">
-                    <img
+                    <Image
                       src={item.image}
                       alt={item.name}
+                      width={500}
+                      height={500}
                       className="w-full object-cover"
                     />
                   </div>

@@ -1,15 +1,18 @@
 import { ProductTypeProps } from "@/types/product.type";
+import Image from "next/image";
 
 const DetailProduct = ({product}: {product: ProductTypeProps}) => {
   return (
    <div className="max-w-xl mx-auto mt-10">
-      <div className="flex flex-col bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
+      <div className="flex flex-col my-10 bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
         {/* Bagian Gambar */}
-        <div className="w-full aspect-square bg-slate-100">
-          <img
+        <div className="aspect-square">
+          <Image
             src={product?.image && product?.image}
             alt={product?.name}
-            className="w-full object-cover"
+            width={600}
+            height={300}
+            className="object-cover"
           />
         </div>
 
