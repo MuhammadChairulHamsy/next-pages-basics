@@ -1,11 +1,11 @@
-import React from 'react'
 
-const About = () => {
+
+const AboutPage = () => {
   return (
     <div>
-      <h1>About Me</h1>
+      <h1 id="title" data-testid="title">About Me</h1>
     </div>
   )
 }
 
-export default About
+export default AboutPage
